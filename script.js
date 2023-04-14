@@ -2,7 +2,6 @@ let board;
 const ROWS = 20;
 const COLUMNS = 10;
 const BOARD = [];
-
 let currentPiece;
 const piecesArray = [
     {
@@ -82,13 +81,24 @@ window.onload = () => {
     currentPiece.currentPose = 0;
     drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
     document.addEventListener("keyup", changePosition);
-    setInterval(update, 1200);
+    setInterval(update, 500);
 }
 
 update = () => {
-    removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
-    currentPiece.y++;
-    drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+    if (currentPiece.positions[currentPiece.currentPose].some((cord) => {
+        return (cord.h + currentPiece.y + 1 > 19 || 
+            BOARD[cord.h + currentPiece.y + 1][cord.w + currentPiece.x].classList.contains('placed'));
+    })) {
+        placePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+        currentPiece = piecesArray[Math.floor(Math.random() * piecesArray.length)];
+        currentPiece.x = 4;
+        currentPiece.y = 0;
+        currentPiece.currentPose = 0;
+    } else {
+        removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+        currentPiece.y++;
+        drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+    }
 }
 
 drawPiece = (pos, h, w) => {
@@ -97,29 +107,59 @@ drawPiece = (pos, h, w) => {
     });
 }
 
+placePiece = (pos, h, w) => {
+    pos.forEach((cord) => {
+        BOARD[h + cord.h][w + cord.w].classList.remove('block');
+        BOARD[h + cord.h][w + cord.w].classList.add('placed');
+    });
+}
+
 removePiece = (pos, h, w) => {
-    console.log('draw piece');
     pos.forEach((cord) => {
         BOARD[h + cord.h][w + cord.w].classList.remove('block');
     });
 }
 
-changePosition = (event) => { 
+changePosition = (event) => {
     if (event.code === 'ArrowUp') {
+        let moveX = 0;
+        const nextPose = currentPiece.positions[(currentPiece.currentPose + 1) % currentPiece.positions.length];
+        nextPose.forEach((cord) => {
+            const leftEdge = currentPiece.x + cord.w - 9;
+            if (leftEdge > moveX) {
+                moveX = leftEdge;
+            }
+        });
+
         removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+        currentPiece.x -= moveX;
         currentPiece.currentPose = (currentPiece.currentPose + 1) % currentPiece.positions.length;
         drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
     } else if (event.code === 'ArrowDown') {
-        removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
-        currentPiece.y++;
-        drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+        if (currentPiece.positions[currentPiece.currentPose].some((cord) => {
+            return (cord.h + currentPiece.y + 1 > 19 || 
+                BOARD[cord.h + currentPiece.y + 1][cord.w + currentPiece.x].classList.contains('placed'));
+        })) {
+            placePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+            currentPiece = piecesArray[Math.floor(Math.random() * piecesArray.length)];
+            currentPiece.x = 4;
+            currentPiece.y = 0;
+            currentPiece.currentPose = 0;
+        } else {
+            removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+            currentPiece.y++;
+            drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+        }
     } else if (event.code === 'ArrowRight') {
-        removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
-        currentPiece.x++;
-        drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
-    } else if (event.code === 'ArrowLeft') {
+        if (currentPiece.positions[currentPiece.currentPose].some(cord => currentPiece.x + cord.w + 1 > 9)) {
+        } else {
+            removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+            currentPiece.x++;
+            drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
+        }
+    } else if (event.code === 'ArrowLeft' && currentPiece.x - 1 >= 0) {
         removePiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
         currentPiece.x--;
         drawPiece(currentPiece.positions[currentPiece.currentPose], currentPiece.y, currentPiece.x);
     }
-} // need to add conditions for borders
+}
