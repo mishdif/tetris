@@ -1,0 +1,57 @@
+body {
+    margin-top: 64px;
+    font-family: 'ArcadeClassic', sans-serif;
+    text-align: center;
+    color: black;
+    background-color: slategray;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#grid {
+    width: 360px;
+    height: 720px;
+    background-color: lightslategray;
+    display: flex;
+    flex-wrap: wrap;
+    border-width: 6px;
+    border-style: ridge;
+    border-color: dimgray;
+}
+
+#grid div {
+    height: 32px;
+    width: 32px;
+    background-color: inherit;
+    border-style: inset;
+    border-width: 2px;
+    border-color: inherit;
+}
+
+#grid .block {
+    height: 30px;
+    width: 30px;
+    background-color: darkcyan;
+    border-style: outset;
+    border-width: 3px;
+    border-color: inherit;
+}
+
+#grid .placed {
+    height: 32px;
+    width: 32px;
+    background-color: darkcyan;
+    border-style: inset;
+    border-width: 2px;
+    border-color: inherit;
+}
+
+header {
+    font-size: 40px;
+    margin-bottom: 16px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-shadow: 4px 4px darkslategray;
+}
